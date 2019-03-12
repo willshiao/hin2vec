@@ -265,6 +265,8 @@ class HIN(object):
                 return walk
             if len(self.graph[node]) == 0:
                 return walk
+            if not self.node_choices[node]:
+                return walk
             #*******************
             next_node, edge_class_id =random.choice(self.node_choices[node])
             walk.append(edge_class_id)
