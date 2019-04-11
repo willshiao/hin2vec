@@ -398,7 +398,7 @@ void DestroyNet() {
 void *TrainModelThread(void *id) {
   long long a, b, d, w, cur_win, word, node_length = 0;
   long long mp_index, edge_length = 0;
-  char *mp = "";
+  char *mp;
   long long rw_length = 0;
   char item[MAX_STRING];
   char rw[MAX_RW_LENGTH][MAX_STRING], edge_seq[MAX_RW_LENGTH][MAX_STRING];
@@ -421,7 +421,9 @@ void *TrainModelThread(void *id) {
     exit(1);
   }
   fseek(fi, file_size / (long long)num_threads * (long long)id, SEEK_SET);
-
+  
+  while (fgetc(fi)!=' '&&feof(fi)!=1);  // make sure the cursor is not positioned "in" a word
+  
   while (1) {
     if (word_count - last_word_count > 10000) {
       word_count_actual += word_count - last_word_count;
@@ -501,7 +503,8 @@ void *TrainModelThread(void *id) {
           if (has_circle) continue;
         }
 
-        mp = edge_seq[a];
+        char mp[MAX_STRING]={0};
+        strcpy(mp,edge_seq[a]);
         for (b=1; b<w; b++) {strcat(mp, edge_seq[a+b]);}
 
         mp_index = SearchMpVocab(mp);
