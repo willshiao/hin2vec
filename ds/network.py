@@ -178,8 +178,8 @@ class HIN(object):
                     continue
                 class_count[class_] += len(to_ids)
         print((self.edge_class2id))
-        for class_, count in list(class_count.items()):
-            print((class_, count))
+        # for class_, count in list(class_count.items()):
+        #     print((class_, count))
 
     def to_homogeneous_network(self):
         aset = set()
