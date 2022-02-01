@@ -6,8 +6,12 @@ import os
 import sys
 import tempfile
 
-from .ds import loader
-from .model.mp2vec_s import MP2Vec
+if __name__ == '__main__':
+    from ds import loader
+    from model.mp2vec_s import MP2Vec
+else:
+    from .ds import loader
+    from .model.mp2vec_s import MP2Vec
 
 
 __author__ = 'sheep'

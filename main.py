@@ -7,8 +7,10 @@ import sys
 import tempfile
 from os import path
 
-from ds import loader
-
+if __name__ == '__main__':
+    from ds import loader
+else:
+    from .ds import loader
 
 __author__ = 'sheep'
 
