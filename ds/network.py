@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- encoding: utf8 -*-
 
-import cPickle
+import pickle
 import random
 import numpy as np
 
@@ -45,18 +45,18 @@ class HIN(object):
     def edge_count(self):
         count = 0
         for from_id in self.graph:
-            for to_ids in self.graph[from_id].values():
+            for to_ids in list(self.graph[from_id].values()):
                 count += len(to_ids)
         return count
 
     def dump_to_file(self, fname):
         with open(fname, 'w') as f:
-            cPickle.dump(self, f)
+            pickle.dump(self, f)
 
     @staticmethod
     def load_from_file(fname):
         with open(fname, 'r') as f:
-            return cPickle.load(f)
+            return pickle.load(f)
 
     @staticmethod
     def load_from_edge_file(fname):
@@ -82,7 +82,7 @@ class HIN(object):
 
     def get_edge_class_inverse_mappling(self):
         inverse_mapping = {}
-        for edge_class in self.edge_class2id.keys():
+        for edge_class in list(self.edge_class2id.keys()):
             inversed = edge_class[::-1]
             if '>' in inversed:
                 inversed = inversed.replace('>', '<')
@@ -150,7 +150,7 @@ class HIN(object):
         else:
             from_id = self.node2id[from_node]
             to_id = self.node2id[to_node]
-            for to_ids in self.graph[from_id].values():
+            for to_ids in list(self.graph[from_id].values()):
                 if to_id in to_ids:
                     return True
             return False
@@ -168,22 +168,22 @@ class HIN(object):
         return float(len(intersection))/len(union)
 
     def print_statistics(self):
-        for c, nodes in self.class_nodes.items():
-            print c, len(nodes)
+        for c, nodes in list(self.class_nodes.items()):
+            print((c, len(nodes)))
         class_count = {}
-        for class_edges in self.graph.values():
-            for class_, to_ids in class_edges.items():
+        for class_edges in list(self.graph.values()):
+            for class_, to_ids in list(class_edges.items()):
                 if class_ not in class_count:
                     class_count[class_] = len(to_ids)
                     continue
                 class_count[class_] += len(to_ids)
-        print self.edge_class2id
-        for class_, count in class_count.items():
-            print class_, count
+        print((self.edge_class2id))
+        for class_, count in list(class_count.items()):
+            print((class_, count))
 
     def to_homogeneous_network(self):
         aset = set()
-        for nodes in self.class_nodes.values():
+        for nodes in list(self.class_nodes.values()):
             aset.update(nodes)
         self.class_nodes = {'': aset}
 
@@ -192,9 +192,9 @@ class HIN(object):
         self.edge_class_id_available_node_class = {}
 
         graph = {}
-        for from_id, to_edges in self.graph.items():
+        for from_id, to_edges in list(self.graph.items()):
             graph[from_id] = {}
-            for to_id, edges in to_edges.items():
+            for to_id, edges in list(to_edges.items()):
                 weight = sum(edges.values())
                 graph[from_id][to_id] = {0: weight}
         self.graph = graph
@@ -204,11 +204,11 @@ class HIN(object):
         '''
             ignore edge type
         '''
-        id2node = dict([(v, k) for k, v in self.node2id.items()])
+        id2node = dict([(v, k) for k, v in list(self.node2id.items())])
         edges = []
         for node_id in self.graph:
-            for to_id, to_edges in self.graph[node_id].items():
-                for edge_class_id, weight in to_edges.items():
+            for to_id, to_edges in list(self.graph[node_id].items()):
+                for edge_class_id, weight in list(to_edges.items()):
                     if with_edge_class_id:
                         edge = (id2node[node_id],
                                 id2node[to_id],
@@ -221,18 +221,18 @@ class HIN(object):
 
     def dump_edge_list_file(self, fname):
         node2class = {}
-        for c, ids in self.class_nodes.items():
+        for c, ids in list(self.class_nodes.items()):
             for id_ in ids:
                 node2class[id_] = c
 
         edge_class_id2edge_class = {}
-        for c, id_ in self.edge_class2id.items():
+        for c, id_ in list(self.edge_class2id.items()):
             edge_class_id2edge_class[id_] = c
 
         with open(fname, 'w') as f:
             for node_id in self.graph:
-                for edge_class_id, tos in self.graph[node_id].items():
-                    for to_id, weight in tos.items():
+                for edge_class_id, tos in list(self.graph[node_id].items()):
+                    for to_id, weight in list(tos.items()):
                         line = ('%d\t%d\t%f\t%s\t%s\t%s\n'
                                 '' % (node_id,
                                   to_id,
@@ -280,7 +280,7 @@ class HIN(object):
         for from_id in self.graph:
             node_choices[from_id] = []
             for to_id in self.graph[from_id]:
-                for edge_id, w in self.graph[from_id][to_id].items():
+                for edge_id, w in list(self.graph[from_id][to_id].items()):
                     node_choices[from_id] += [(to_id, edge_id)] * int(w*10)
         self.node_choices = node_choices
 
@@ -309,7 +309,7 @@ class HIN(object):
             for node in self.graph:
                 n += 1
                 if n % 10000 == 0:
-                    print n
+                    print(n)
                 walk = self.a_random_walk(node, length)
                 if len(walk) != 1:
                     yield walk
@@ -319,7 +319,7 @@ class HIN(object):
         edge_class_id = self.edge_class2id[edge_class]
         positives = []
         for from_id in self.class_nodes[from_class]:
-            for to_id in self.graph[from_id].get(edge_class_id, {}).keys():
+            for to_id in list(self.graph[from_id].get(edge_class_id, {}).keys()):
                 positives.append((from_id, to_id))
         random.shuffle(positives)
         selected_pos = positives[:count]
@@ -426,8 +426,8 @@ class HIN(object):
             inv_edge_class_id = edge_class_id
 
         edges = []
-        for from_id, tos in self.graph.items():
-            for to_id, to_edges in tos.items():
+        for from_id, tos in list(self.graph.items()):
+            for to_id, to_edges in list(tos.items()):
                 if edge_class_id not in to_edges:
                     continue
                 edges.append((from_id, to_id))
@@ -463,7 +463,7 @@ class HIN(object):
                 continue
             selected.add((rand_from_id, rand_to_id))
             if len(selected) % 10000 == 0:
-                print len(selected)
+                print((len(selected)))
         return selected
 
     def to_edge_class_id_string(self, edge_classes):

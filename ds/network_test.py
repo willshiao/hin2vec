@@ -4,7 +4,7 @@
 import copy
 import unittest
 
-import network
+from . import network
 
 
 __author__ = "sheep"
@@ -47,7 +47,7 @@ class RandomWalkTest(unittest.TestCase):
             [2, 1, 1, 0, 0],
             [3, 0, 0, 0, 3]
         ]
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
 
 class HINTest(unittest.TestCase):
@@ -136,7 +136,7 @@ class HINTest(unittest.TestCase):
         g.add_edge('I3', 'I', 'P1', 'P', 'I-P')
         g.add_edge('I3', 'I', 'P3', 'P', 'I-P')
 
-        self.assertEquals(expected, g)
+        self.assertEqual(expected, g)
 
 
 class ToHomogeneousNetwork(unittest.TestCase):
@@ -158,7 +158,7 @@ class ToHomogeneousNetwork(unittest.TestCase):
         expected.edge_class_id_available_node_class = {}
 
         g.to_homogeneous_network()
-        self.assertEquals(expected, g)
+        self.assertEqual(expected, g)
 
 
 class ToWeightedEdgeListTest(unittest.TestCase):
@@ -178,7 +178,7 @@ class ToWeightedEdgeListTest(unittest.TestCase):
             ('P1', 'P2', 2),
             ('P2', 'P1', 2),
         ]
-        self.assertEquals(expected_edges, edges)
+        self.assertEqual(expected_edges, edges)
 
 
 class GetEdgeClassInverMapplingTest(unittest.TestCase):
@@ -194,7 +194,7 @@ class GetEdgeClassInverMapplingTest(unittest.TestCase):
 
         expected = {'1': '2', '2': '1'}
         actual = g.get_edge_class_inverse_mappling()
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
     def testDirected(self):
         g = network.HIN()
@@ -207,7 +207,7 @@ class GetEdgeClassInverMapplingTest(unittest.TestCase):
 
         expected = {'0': '1', '1': '0', '2': '3', '3': '2'}
         actual = g.get_edge_class_inverse_mappling()
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
 
 class InKHopNeighborhood(unittest.TestCase):
@@ -241,14 +241,14 @@ class InKHopNeighborhood(unittest.TestCase):
             self.g.node2id['D'],
         }
         actual = self.g._get_k_hop_neighborhood(0, 2)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
     def testInKHop(self):
-        self.assertEquals(True, self.g.in_k_hop_neighborhood(0, 1, 2))
-        self.assertEquals(True, self.g.in_k_hop_neighborhood(0, 2, 2))
-        self.assertEquals(True, self.g.in_k_hop_neighborhood(0, 3, 2))
-        self.assertEquals(False,self.g.in_k_hop_neighborhood(0, 4, 2))
-        self.assertEquals(False,self.g.in_k_hop_neighborhood(1, 4, 2))
+        self.assertEqual(True, self.g.in_k_hop_neighborhood(0, 1, 2))
+        self.assertEqual(True, self.g.in_k_hop_neighborhood(0, 2, 2))
+        self.assertEqual(True, self.g.in_k_hop_neighborhood(0, 3, 2))
+        self.assertEqual(False,self.g.in_k_hop_neighborhood(0, 4, 2))
+        self.assertEqual(False,self.g.in_k_hop_neighborhood(1, 4, 2))
 
         expected = {
             2: {
@@ -256,7 +256,7 @@ class InKHopNeighborhood(unittest.TestCase):
                 1: set([0, 2, 3]),
             }
         }
-        self.assertEquals(expected, self.g.k_hop_neighbors)
+        self.assertEqual(expected, self.g.k_hop_neighbors)
 
     def testGetCandidates(self):
         g = network.HIN()
@@ -282,7 +282,7 @@ class InKHopNeighborhood(unittest.TestCase):
             g.node2id['D'],
         }
         actual = g.get_candidates(0, 2, 'x')
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
 
 class GetShortestDistance(unittest.TestCase):
@@ -314,29 +314,29 @@ class GetShortestDistance(unittest.TestCase):
 
     def testSimple(self):
         actual = self.g.get_shortest_distance(0, 1) # A, B
-        self.assertEquals(1, actual)
+        self.assertEqual(1, actual)
 
         actual = self.g.get_shortest_distance(1, 0) # B, A
-        self.assertEquals(1, actual)
+        self.assertEqual(1, actual)
 
         actual = self.g.get_shortest_distance(0, 4) # A, E
-        self.assertEquals(3, actual)
+        self.assertEqual(3, actual)
 
         actual = self.g.get_shortest_distance(4, 0) # E, A
-        self.assertEquals(3, actual)
+        self.assertEqual(3, actual)
 
         actual = self.g.get_shortest_distance(0, 7) # A, X
-        self.assertEquals(None, actual)
+        self.assertEqual(None, actual)
 
         actual = self.g.get_shortest_distance(7, 0) # X, A
-        self.assertEquals(None, actual)
+        self.assertEqual(None, actual)
 
     def testWithMax(self):
         actual = self.g.get_shortest_distance(0, 6, max_=2) # A, F
-        self.assertEquals(None, actual)
+        self.assertEqual(None, actual)
 
         actual = self.g.get_shortest_distance(6, 0, max_=2) # F, A
-        self.assertEquals(None, actual)
+        self.assertEqual(None, actual)
 
 
 class AvailabeNodeClassOfEdgeClassTest(unittest.TestCase):
@@ -358,7 +358,7 @@ class AvailabeNodeClassOfEdgeClassTest(unittest.TestCase):
             2: ('A', 'C'), #A-C
             3: ('C', 'A'), #C-A
         }
-        self.assertEquals(expected, g.edge_class_id_available_node_class)
+        self.assertEqual(expected, g.edge_class_id_available_node_class)
 
 
 class RandomRemoveEdge(unittest.TestCase):
@@ -382,8 +382,8 @@ class RandomRemoveEdge(unittest.TestCase):
         expected_g.graph[3].pop(0)
         expected_edges = [(0, 3)]
         actual = g.random_remove_edges('A-B', ratio=0.5, seed=1)
-        self.assertEquals(expected_edges, actual)
-        self.assertEquals(expected_g, g)
+        self.assertEqual(expected_edges, actual)
+        self.assertEqual(expected_g, g)
 
 
 class RandomSelectNegEdges(unittest.TestCase):
@@ -404,7 +404,7 @@ class RandomSelectNegEdges(unittest.TestCase):
 
         expected = set([(4, 1), (4, 3)])
         actual = g.random_select_neg_edges('A-B', 2, seed=1)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
 
 class ToEdgeClassIdString(unittest.TestCase):
@@ -426,7 +426,7 @@ class ToEdgeClassIdString(unittest.TestCase):
         edge_classes = ['A-B', 'B-A', 'A-C']
         expected = '0,1,2'
         actual = g.to_edge_class_id_string(edge_classes)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
 
 class GenerateTestSet(unittest.TestCase):
@@ -456,19 +456,19 @@ class GenerateTestSet(unittest.TestCase):
 
         expected = [(0, 4, 0), (3, 1, 0), (4, 2, 0), (3, 0, 1)]
         actual = g.generate_test_set([0], 4, seed=1)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
         expected = [(0, 5, 1), (3, 5, 0), (2, 5, 0), (3, 5, 0)]
         actual = g.generate_test_set([1], 4, seed=1)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
         expected = [(0, 4, 1), (3, 1, 1), (4, 2, 1), (3, 0, 0)]
         actual = g.generate_test_set([0, 0], 4, seed=1)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
         expected = [(4, 5, 0), (0, 5, 1), (4, 5, 0), (3, 5, 1)]
         actual = g.generate_test_set([0, 1], 4, seed=2)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

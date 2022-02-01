@@ -23,10 +23,10 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
     path_vec_fname: the output file for meta-paths' vectors
     '''
 
-    print 'Load a HIN...'
+    print('Load a HIN...')
     g = loader.load_a_HIN(graph_fname)
 
-    print 'Generate random walks...'
+    print('Generate random walks...')
     _, tmp_walk_fname = tempfile.mkstemp()
     with open(tmp_walk_fname, 'w') as f:
         for walk in g.random_walks(options.walk_num, options.walk_length):
@@ -34,7 +34,7 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
 
     _, tmp_node_vec_fname = tempfile.mkstemp()
     _, tmp_path_vec_fname = tempfile.mkstemp()
-    print 'Learn representations...'
+    print('Learn representations...')
     statement = ("model_c/bin/hin2vec -size %d -train %s -alpha %f "
                  "-output %s -output_mp %s -window %d -negative %d "
                  "-threads %d -no_circle %d -sigmoid_reg %d "
@@ -48,10 +48,10 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
                        options.num_processes,
                        1-(options.allow_circle * 1),
                        options.sigmoid_reg * 1))
-    print statement
+    print(statement)
     os.system(statement)
 
-    print 'Dump vectors...'
+    print('Dump vectors...')
     output_node2vec(g, tmp_node_vec_fname, node_vec_fname)
     output_path2vec(g, tmp_path_vec_fname, path_vec_fname)
     return 0
@@ -59,7 +59,7 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
 def output_node2vec(g, tmp_node_vec_fname, node_vec_fname):
     with open(tmp_node_vec_fname) as f:
         with open(node_vec_fname, 'w') as fo:
-            id2node = dict([(v, k) for k, v in g.node2id.items()])
+            id2node = dict([(v, k) for k, v in list(g.node2id.items())])
             first = True
             for line in f:
                 if first:
@@ -76,7 +76,7 @@ def output_path2vec(g, tmp_path_vec_fname, path_vec_fname):
     with open(tmp_path_vec_fname) as f:
         with open(path_vec_fname, 'w') as fo:
             id2edge_class = dict([(v, k) for k, v
-                                  in g.edge_class2id.items()])
+                                  in list(g.edge_class2id.items())])
             first = True
             for line in f:
                 if first:

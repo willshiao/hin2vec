@@ -6,8 +6,8 @@ import os
 import sys
 import tempfile
 
-from ds import loader
-from model.mp2vec_s import MP2Vec
+from .ds import loader
+from .model.mp2vec_s import MP2Vec
 
 
 __author__ = 'sheep'
@@ -24,12 +24,12 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
     path_vec_fname: the output file for meta-paths' vectors
     '''
 
-    print 'Load a HIN...'
+    print('Load a HIN...')
     g = loader.load_a_HIN(graph_fname)
 
-    print 'Generate random walks...'
+    print('Generate random walks...')
     _, tmp_walk_fname = tempfile.mkstemp()
-    print tmp_walk_fname
+    print(tmp_walk_fname)
     with open(tmp_walk_fname, 'w') as f:
         for walk in g.random_walks(options.walk_num, options.walk_length):
             f.write('%s\n' % ' '.join(map(str, walk)))
@@ -62,7 +62,7 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
     model.dump_to_file(tmp_node_vec_fname, type_='node')
     model.dump_to_file(tmp_path_vec_fname, type_='path')
 
-    print 'Dump vectors...'
+    print('Dump vectors...')
     output_node2vec(g, tmp_node_vec_fname, node_vec_fname)
     output_path2vec(g, tmp_path_vec_fname, path_vec_fname)
     return 0
@@ -70,7 +70,7 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
 def output_node2vec(g, tmp_node_vec_fname, node_vec_fname):
     with open(tmp_node_vec_fname) as f:
         with open(node_vec_fname, 'w') as fo:
-            id2node = dict([(v, k) for k, v in g.node2id.items()])
+            id2node = dict([(v, k) for k, v in list(g.node2id.items())])
             first = True
             for line in f:
                 if first:
@@ -87,8 +87,8 @@ def output_path2vec(g, tmp_path_vec_fname, path_vec_fname):
     with open(tmp_path_vec_fname) as f:
         with open(path_vec_fname, 'w') as fo:
             id2edge_class = dict([(v, k) for k, v
-                                  in g.edge_class2id.items()])
-            print id2edge_class
+                                  in list(g.edge_class2id.items())])
+            print(id2edge_class)
             first = True
             for line in f:
                 if first:
@@ -97,7 +97,7 @@ def output_path2vec(g, tmp_path_vec_fname, path_vec_fname):
                     continue
 
                 ids, vectors = line.strip().split(' ', 1)
-                ids = map(int, ids.split(','))
+                ids = list(map(int, ids.split(',')))
                 edge = ','.join([id2edge_class[id_] for id_ in ids])
                 line = '%s %s\n' % (edge, vectors)
                 fo.write(line)

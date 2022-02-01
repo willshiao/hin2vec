@@ -49,7 +49,7 @@ class NodeVocab(object):
 
         for id_ in g.graph:
             degree = 0
-            for to_ids in g.graph[id_].values():
+            for to_ids in list(g.graph[id_].values()):
                 degree += len(to_ids)
 
             id_string = str(id_)
@@ -97,7 +97,7 @@ class NodeVocab(object):
                     if node_count % 10000 == 0:
                         sys.stdout.write("\rReading nodes %d" % node_count)
                         sys.stdout.flush()
-            print
+            print()
 
             node_vocab = NodeVocab()
             node_vocab.nodes = nodes
@@ -228,7 +228,7 @@ class PathVocab(object):
                             sys.stdout.write("\rReading paths %d"
                                              "" % path_count)
                             sys.stdout.flush()
-            print
+            print()
 
             path_vocab = PathVocab()
             path_vocab.paths = paths
@@ -319,7 +319,7 @@ class EdgeNodePathVocab(PathVocab):
                             sys.stdout.write("\rReading paths %d"
                                              "" % path_count)
                             sys.stdout.flush()
-            print
+            print()
 
             path_vocab = EdgeNodePathVocab()
             path_vocab.paths = paths
