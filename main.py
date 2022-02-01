@@ -5,6 +5,7 @@ import optparse
 import os
 import sys
 import tempfile
+from os import path
 
 from ds import loader
 
@@ -34,20 +35,24 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
 
     _, tmp_node_vec_fname = tempfile.mkstemp()
     _, tmp_path_vec_fname = tempfile.mkstemp()
+    curr_dir = os.path.dirname(os.path.realpath(__file__))
+
     print('Learn representations...')
-    statement = ("model_c/bin/hin2vec -size %d -train %s -alpha %f "
+    statement = ("%s -size %d -train %s -alpha %f "
                  "-output %s -output_mp %s -window %d -negative %d "
                  "-threads %d -no_circle %d -sigmoid_reg %d "
-                 "" % (options.dim,
-                       tmp_walk_fname,
-                       options.alpha,
-                       tmp_node_vec_fname,
-                       tmp_path_vec_fname,
-                       options.window,
-                       options.neg,
-                       options.num_processes,
-                       1-(options.allow_circle * 1),
-                       options.sigmoid_reg * 1))
+                 "" % (
+                     path.join(curr_dir, 'model_c/bin/hin2vec'),
+                     options.dim,
+                     tmp_walk_fname,
+                     options.alpha,
+                     tmp_node_vec_fname,
+                     tmp_path_vec_fname,
+                     options.window,
+                     options.neg,
+                     options.num_processes,
+                     1-(options.allow_circle * 1),
+                     options.sigmoid_reg * 1))
     print(statement)
     os.system(statement)
 
@@ -55,6 +60,7 @@ def main(graph_fname, node_vec_fname, path_vec_fname, options):
     output_node2vec(g, tmp_node_vec_fname, node_vec_fname)
     output_path2vec(g, tmp_path_vec_fname, path_vec_fname)
     return 0
+
 
 def output_node2vec(g, tmp_node_vec_fname, node_vec_fname):
     with open(tmp_node_vec_fname) as f:
@@ -71,7 +77,9 @@ def output_node2vec(g, tmp_node_vec_fname, node_vec_fname):
                 line = '%s %s\n' % (id2node[int(id_)], vectors)
                 fo.write(line)
 
-#FIXME: to support more than 10 different meta-paths
+# FIXME: to support more than 10 different meta-paths
+
+
 def output_path2vec(g, tmp_path_vec_fname, path_vec_fname):
     with open(tmp_path_vec_fname) as f:
         with open(path_vec_fname, 'w') as fo:
@@ -118,11 +126,11 @@ if __name__ == '__main__':
     parser.add_option('-p', '--num_processes', action='store',
                       dest='num_processes', default=1, type='int',
                       help='Number of processes (default: 1)')
-#TODO
+# TODO
 #   parser.add_option('-i', '--iter', action='store', dest='iter',
 #                     default=1, type='int',
 #                     help='Training iterations (default: 1)')
-#TODO
+# TODO
 #   parser.add_option('-s', '--same-matrix', action='store_true',
 #                     dest='same_w', default=False,
 #                     help=('Same matrix for nodes and context nodes '
@@ -144,4 +152,3 @@ if __name__ == '__main__':
         sys.exit()
 
     sys.exit(main(args[0], args[1], args[2], options))
-
